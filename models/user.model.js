@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema(
     token: {
       type: "string",
     },
-    confirm: {
+    confirmed: {
       type: Boolean,
       default: false,
     },
@@ -37,6 +37,10 @@ userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
+
+userSchema.methods.comparePassword = async function (inputPassword) {
+  return await bcrypt.compare(inputPassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 
