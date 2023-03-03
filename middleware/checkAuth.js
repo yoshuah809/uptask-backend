@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 
-const verifyAuth = async (req, res, next) => {
+const checkAuth = async (req, res, next) => {
   let token;
 
   if (
@@ -18,17 +18,18 @@ const verifyAuth = async (req, res, next) => {
       // Get user from the token
       req.user = await User.findById(decoded.id).select("-password");
 
-      next();
+      return next();
     } catch (error) {
-      console.log(error);
-      res.status(401);
-      throw new Error("Not authorized");
+      return res
+        .status(404)
+        .json({ message: ", There Was an Error, Invalid token" });
     }
   }
 
   if (!token) {
-    res.status(401);
-    throw new Error("Not authorized, no token");
+    const error = new Error("Not authorized, no token");
+    return res.status(401).json({ message: error.message });
   }
+  next();
 };
-export default verifyAuth;
+export default checkAuth;
