@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/", checkAuth, taskController.addTask);
 router
-  .route("/id")
+  .route("/:id")
   .get(checkAuth, taskController.getTask)
   .put(checkAuth, taskController.updateTask)
   .delete(checkAuth, taskController.deleteTask);

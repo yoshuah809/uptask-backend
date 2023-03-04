@@ -15,7 +15,7 @@ connectDB();
 //Routing
 app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);
-app.use("/api/task", taskRoutes);
+app.use("/api/tasks", taskRoutes);
 
 const PORT = process.env.PORT || 3500;
 
