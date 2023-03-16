@@ -1,3 +1,4 @@
+import { registerEmail } from "../helpers/email..js";
 import GenerateId from "../helpers/generateId.js";
 import generateToken from "../helpers/generateJWT.js";
 import User from "../models/user.model.js";
@@ -9,14 +10,25 @@ const registerUser = async (req, res) => {
 
   if (userExists) {
     const error = new Error("User already exists");
-    return res.status(400).json({ msg: error.message });
+    return res.status(400).json({ message: error.message });
   }
 
   try {
     const user = new User(req.body);
     user.token = GenerateId();
-    const savedUser = await user.save();
-    res.json(savedUser);
+    await user.save();
+
+    //Send Confirmation email
+    registerEmail({
+      email: user.email,
+      username: user.username,
+      token: user.token,
+    });
+
+    res.json({
+      message:
+        "User created successfully, check your email to confirm your account ",
+    });
   } catch (error) {
     console.log(error);
   }
