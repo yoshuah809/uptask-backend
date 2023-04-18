@@ -14,9 +14,13 @@ const addTask = async (req, res) => {
     );
     return res.status(403).json({ message: error.message });
   }
+
   try {
     const taskToSave = await Task.create(req.body);
-    res.json(taskToSave).populate("project name");
+    projectExist.tasks.push(taskToSave._id);
+    await projectExist.save();
+    //res.json(taskToSave).populate("project name");
+    res.json(taskToSave);
   } catch (error) {
     console.log(error);
   }

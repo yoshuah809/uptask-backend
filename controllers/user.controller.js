@@ -1,4 +1,4 @@
-import { registerEmail } from "../helpers/email..js";
+import { emailForgotPassword, registerEmail } from "../helpers/email..js";
 import GenerateId from "../helpers/generateId.js";
 import generateToken from "../helpers/generateJWT.js";
 import User from "../models/user.model.js";
@@ -6,6 +6,7 @@ import User from "../models/user.model.js";
 const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
 
+  console.log(username);
   const userExists = await User.findOne({ email });
 
   if (userExists) {
@@ -71,7 +72,7 @@ const confirm = async (req, res) => {
     userConfirm.confirmed = true;
     userConfirm.token = "";
     await userConfirm.save();
-    res.status(201).json({ msg: "The Account has been validated" });
+    res.status(201).json({ message: "The user Account has been Confirmed" });
   } catch (error) {
     console.log(error);
   }
@@ -90,8 +91,15 @@ const forgotPassword = async (req, res) => {
   try {
     user.token = GenerateId();
     await user.save();
+    //send email notification
+    emailForgotPassword({
+      email: user.email,
+      username: user.username,
+      token: user.token,
+    });
+
     res.json({
-      message: "We have sent an email with the instructions",
+      msg: "We have sent an email with the instructions",
     });
   } catch (error) {
     console.log(error);
@@ -104,7 +112,7 @@ const verifyToken = async (req, res) => {
   const validToken = await User.findOne({ token });
 
   if (validToken) {
-    res.json({ message: "User Exists" });
+    res.json({ message: "Valid Token and User Exists" });
   } else {
     const error = new Error("Invalid token");
     return res.status(404).json({ msg: error.message });
@@ -121,7 +129,7 @@ const newPassword = async (req, res) => {
     user.token = "";
     try {
       await user.save();
-      res.json({ message: "Password has been modified" });
+      res.json({ msg: "Password has been modified" });
     } catch (error) {
       console.log(error);
     }
@@ -132,6 +140,7 @@ const newPassword = async (req, res) => {
 
 const profile = async (req, res) => {
   const { user } = req;
+  //res.json(user).select("-createdAt -confirm");
   res.json(user);
 };
 
