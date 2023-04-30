@@ -13,8 +13,14 @@ router
   .get(checkAuth, projectController.getProject)
   .put(checkAuth, projectController.editProject)
   .delete(checkAuth, projectController.deleteProject);
-router.get("/tasks/:id", checkAuth, projectController.getTasks);
-router.post("/add-memeber/:id", checkAuth, projectController.addMember);
-router.post("/delete-memeber/:id", checkAuth, projectController.deleteMember);
+router.get("/tasks/:id", checkAuth, projectController.getTasks); // TODO --- need to move this to Task Controller
+
+router.post("/contributors/", checkAuth, projectController.searchMember);
+router.post("/contributors/:id", checkAuth, projectController.addMember);
+router.post(
+  "/delete-contributor/:id",
+  checkAuth,
+  projectController.deleteMember
+);
 
 export default router;
